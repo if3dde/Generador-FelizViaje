@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FelizViaje - Generador de WhatsApp</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">✈️</div>
+          <div class="brand-copy">
+            <span class="brand-kicker">Herramienta interna</span>
+            <strong class="brand-name">FelizViaje</strong>
+          </div>
+        </div>
+        <div class="branch-footer"><span class="branch-prefix">Hecho por:</span> Sucursal Tribunales</div>
+      </header>
+
+      <main class="workspace">
+        <section class="composer">
+          <div class="hero-card">
+            <div class="hero-copy">
+              <span class="hero-tag">Sistema de cotización</span>
+              <h1>Generador de propuestas comerciales</h1>
+              <p>Diseñado para armar propuestas turísticas claras, rápidas y con presentación profesional.</p>
+            </div>            <div class="hero-visual">
+            </div>          </div>
+
+          <form id="quoteForm" class="booking-form" autocomplete="off">
+            <details class="booking-section" open>
+              <summary class="section-summary">
+                <span class="section-icon">📍</span>
+                <span class="section-text">
+                  <span class="section-title">Destino</span>
+                  <span class="section-subtitle">Información general del viaje</span>
+                </span>
+              </summary>
+
+              <div class="section-body">
+                <div class="search-strip">
+                  <label class="field field-search full" for="destino">
+                    <span class="field-label">Destino</span>
+                    <input id="destino" name="destino" required placeholder="Buscar ciudad, playa, hotel o circuito..." />
+                  </label>
+                </div>
+
+                <div class="grid grid-3">
+                  <label class="field" for="fecha_salida">
+                    <span class="field-label">Fecha de salida</span>
+                    <input id="fecha_salida" name="fecha_salida" type="date" />
+                  </label>
+                  <label class="field" for="origen">
+                    <span class="field-label">Ciudad de salida</span>
+                    <input id="origen" name="origen" placeholder="Ej: Buenos Aires" />
+                  </label>
+                  <label class="field" for="noches">
+                    <span class="field-label">Duración en noches</span>
+                    <input id="noches" name="noches" type="number" min="1" placeholder="0" />
+                  </label>
+                </div>
+              </div>
+            </details>
+
+            <details class="booking-section" open>
+              <summary class="section-summary">
+                <span class="section-icon">✈️</span>
+                <span class="section-text">
+                  <span class="section-title">Vuelo</span>
+                  <span class="section-subtitle">Datos aéreos y equipaje</span>
+                </span>
+              </summary>
+
+              <div class="section-body">
+                <div class="grid grid-3">
+                  <label class="field" for="aerolinea">
+                    <span class="field-label">Aerolínea</span>
+                    <input id="aerolinea" name="aerolinea" />
+                  </label>
+                  <label class="field" for="fecha_vuelo_salida">
+                    <span class="field-label">Fecha salida (vuelo)</span>
+                    <input id="fecha_vuelo_salida" name="fecha_vuelo_salida" type="date" />
+                  </label>
+                  <label class="field" for="fecha_vuelo_regreso">
+                    <span class="field-label">Fecha regreso (vuelo)</span>
+                    <input id="fecha_vuelo_regreso" name="fecha_vuelo_regreso" type="date" />
+                  </label>
+                </div>
+
+                <div class="grid grid-2">
+                  <label class="field" for="escala_ida">
+                    <span class="field-label">Escalas ida</span>
+                    <div class="counter-input">
+                      <button type="button" class="counter-btn" data-target="escala_ida" data-action="decrease">-</button>
+                      <input id="escala_ida" name="escala_ida" type="number" min="0" step="1" value="0" />
+                      <button type="button" class="counter-btn" data-target="escala_ida" data-action="increase">+</button>
+                    </div>
+                  </label>
+                  <label class="field" for="escala_vuelta">
+                    <span class="field-label">Escalas vuelta</span>
+                    <div class="counter-input">
+                      <button type="button" class="counter-btn" data-target="escala_vuelta" data-action="decrease">-</button>
+                      <input id="escala_vuelta" name="escala_vuelta" type="number" min="0" step="1" value="0" />
+                      <button type="button" class="counter-btn" data-target="escala_vuelta" data-action="increase">+</button>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="choice-panel" role="group" aria-labelledby="equipaje-label">
+                  <div class="choice-panel-head">
+                    <span id="equipaje-label" class="field-label">Equipaje (elige una o más opciones)</span>
+                  </div>
+                  <div class="pill-grid">
+                    <label class="choice-pill" for="equipaje-mochila">
+                      <input id="equipaje-mochila" type="checkbox" name="equipaje" value="Mochila" />
+                      <span>Mochila</span>
+                    </label>
+                    <label class="choice-pill" for="equipaje-carry-on">
+                      <input id="equipaje-carry-on" type="checkbox" name="equipaje" value="Carry on" />
+                      <span>Carry on</span>
+                    </label>
+                    <label class="choice-pill" for="equipaje-despachar">
+                      <input id="equipaje-despachar" type="checkbox" name="equipaje" value="Bodega" />
+                      <span>Bodega</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details class="booking-section" open>
+              <summary class="section-summary">
+                <span class="section-icon">🚗</span>
+                <span class="section-text">
+                  <span class="section-title">Traslado</span>
+                  <span class="section-subtitle">Modalidad incluida en el paquete</span>
+                </span>
+              </summary>
+
+              <div class="section-body">
+                <div class="choice-panel" role="radiogroup" aria-labelledby="traslado-label">
+                  <div class="choice-panel-head">
+                    <span id="traslado-label" class="field-label">Tipo de traslado</span>
+                  </div>
+                  <div class="pill-grid pill-grid-2">
+                    <label class="choice-pill" for="traslado-privado">
+                      <input id="traslado-privado" type="radio" name="traslado" value="Privado" />
+                      <span>Privado</span>
+                    </label>
+                    <label class="choice-pill" for="traslado-compartido">
+                      <input id="traslado-compartido" type="radio" name="traslado" value="Compartido" />
+                      <span>Compartido</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details class="booking-section" open>
+              <summary class="section-summary">
+                <span class="section-icon">🏨</span>
+                <span class="section-text">
+                  <span class="section-title">Hotel</span>
+                  <span class="section-subtitle">Alojamiento, régimen y ubicación</span>
+                </span>
+              </summary>
+
+              <div class="section-body">
+                <div class="grid grid-2">
+                  <label class="field" for="hotel">
+                    <span class="field-label">Nombre del hotel</span>
+                    <input id="hotel" name="hotel" />
+                  </label>
+
+                  <div class="field">
+                    <span class="field-label">Estrellas del hotel</span>
+                    <div class="star-card">
+                      <div class="star-rating" data-target="estrellas" role="radiogroup" aria-label="Seleccione estrellas del hotel">
+                        <span class="star" data-value="1">⭐</span>
+                        <span class="star" data-value="2">⭐</span>
+                        <span class="star" data-value="3">⭐</span>
+                        <span class="star" data-value="4">⭐</span>
+                        <span class="star" data-value="5">⭐</span>
+                      </div>
+                      <span class="star-hint">Seleccioná la categoría del hotel</span>
+                    </div>
+                    <input id="estrellas" type="hidden" name="estrellas" value="" />
+                  </div>
+                </div>
+
+                <div class="choice-panel" role="radiogroup" aria-labelledby="regimen-label">
+                  <div class="choice-panel-head">
+                    <span id="regimen-label" class="field-label">Régimen del hotel</span>
+                  </div>
+                  <div class="pill-grid">
+                    <label class="choice-pill" for="regimen-solo-habitacion">
+                      <input id="regimen-solo-habitacion" type="radio" name="regimen" value="Solo habitación" />
+                      <span>Solo habitación</span>
+                    </label>
+                    <label class="choice-pill" for="regimen-desayuno">
+                      <input id="regimen-desayuno" type="radio" name="regimen" value="Desayuno" />
+                      <span>Desayuno</span>
+                    </label>
+                    <label class="choice-pill" for="regimen-media-pension">
+                      <input id="regimen-media-pension" type="radio" name="regimen" value="Media pensión" />
+                      <span>Media pensión</span>
+                    </label>
+                    <label class="choice-pill" for="regimen-all-inclusive">
+                      <input id="regimen-all-inclusive" type="radio" name="regimen" value="All inclusive" />
+                      <span>All inclusive</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="grid grid-3">
+                  <label class="field" for="noches_hotel">
+                    <span class="field-label">Cantidad de noches del hotel</span>
+                    <input id="noches_hotel" name="noches_hotel" type="number" min="0" />
+                  </label>
+                  <label class="field" for="fecha_ingreso">
+                    <span class="field-label">Fecha de ingreso</span>
+                    <input id="fecha_ingreso" name="fecha_ingreso" type="date" />
+                  </label>
+                  <label class="field field-inline-action full-mobile" for="linkUbicacion">
+                    <span class="field-label">Link de ubicación de Google Maps</span>
+                    <span class="inline-input">
+                      <input id="linkUbicacion" name="link_ubicacion" placeholder="https://maps.google.com/..." />
+                      <button id="pasteLocationBtn" type="button" class="btn btn-soft">Pegar</button>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </details>
+
+            <details class="booking-section" open>
+              <summary class="section-summary">
+                <span class="section-icon">💳</span>
+                <span class="section-text">
+                  <span class="section-title">Importe final</span>
+                  <span class="section-subtitle">Tarifa, asistencia y observaciones</span>
+                </span>
+              </summary>
+
+              <div class="section-body">
+                <div class="grid grid-2">
+                  <label class="field" for="moneda">
+                    <span class="field-label">Moneda</span>
+                    <select id="moneda" name="moneda">
+                      <option>ARS</option>
+                      <option selected>USD</option>
+                      <option>EUR</option>
+                    </select>
+                  </label>
+                  <label class="field" for="precio">
+                    <span class="field-label">Precio (por persona)</span>
+                    <input id="precio" name="precio" type="number" step="0.01" placeholder="0.00" />
+                  </label>
+                  <label class="field" for="fecha_cotizacion">
+                    <span class="field-label">Fecha de cotización</span>
+                    <input id="fecha_cotizacion" name="fecha_cotizacion" type="date" />
+                  </label>
+                  <label class="field" for="asistencia">
+                    <span class="field-label">Asistencia al viajero incluida</span>
+                    <select id="asistencia" name="asistencia">
+                      <option value="sí">Sí</option>
+                      <option value="no" selected>No</option>
+                    </select>
+                  </label>
+                  <label class="field full" for="texto_adicional">
+                    <span class="field-label">Texto adicional (opcional)</span>
+                    <textarea id="texto_adicional" name="texto_adicional" rows="4" placeholder="Mensaje extra para el cliente..."></textarea>
+                  </label>
+                </div>
+              </div>
+            </details>
+
+            <div class="form-actions">
+              <button id="generateBtn" type="button" class="btn btn-primary">Generar mensaje</button>
+              <button id="saveTemplateBtn" type="button" class="btn btn-secondary">Guardar plantilla</button>
+              <button id="clearBtn" type="button" class="btn btn-ghost">Limpiar todo</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="preview-column">
+          <section class="preview-panel" aria-labelledby="resultado-heading">
+            <div class="preview-head">
+              <div>
+                <span class="preview-tag">Vista previa</span>
+                <h2 id="resultado-heading">Mensaje generado</h2>
+              </div>
+            </div>
+
+            <textarea id="output" readonly rows="16" placeholder="Aquí aparecerá el mensaje..."></textarea>
+
+            <div class="preview-actions">
+              <button id="copyBtn" type="button" class="btn btn-secondary">Copiar mensaje</button>
+              <button id="whatsappBtn" type="button" class="btn btn-soft">Abrir WhatsApp</button>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <div id="saveNotification" class="save-notification" hidden>Guardado automáticamente ✓</div>
+
+      <footer class="footer">© <span id="year"></span> FelizViaje, hecho por Federico Fantini</footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
