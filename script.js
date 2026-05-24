@@ -165,9 +165,11 @@ function setupActions(elements) {
     document.querySelectorAll('[data-error-for]').forEach(el => el.remove());
   });
 
-  saveTemplateBtn.addEventListener("click", () => {
-    saveToStorage(serializeForm(form), true, saveNotification);
-  });
+  if (saveTemplateBtn) {
+    saveTemplateBtn.addEventListener("click", () => {
+      saveToStorage(serializeForm(form), true, saveNotification);
+    });
+  }
 }
 
 function serializeForm(form) {
