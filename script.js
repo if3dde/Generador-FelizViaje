@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEscalaCounters(form);
   setupActions(elements);
   setupStarRatings(form);
+  setupRealtimeValidation(form);
 });
 
 function getElements() {
@@ -97,7 +98,14 @@ function setupActions(elements) {
   const { form, output, copyBtn, clearBtn, generateBtn, whatsappBtn, linkUbicacion, pasteLocationBtn, saveTemplateBtn, saveNotification } = elements;
 
   generateBtn.addEventListener("click", () => {
-    output.value = buildMessage(serializeForm(form));
+    const data = serializeForm(form);
+    const errors = validateForm(data);
+    if (errors.length) {
+      alert("Errores:\n- " + errors.join("\n- "));
+      return;
+    }
+
+    output.value = buildMessage(data);
     output.scrollTop = 0;
     output.classList.remove("message-ready");
     void output.offsetWidth;
@@ -150,6 +158,11 @@ function setupActions(elements) {
     clearStorage();
     resetStars();
     setDefaultQuoteDate(form);
+  });
+
+  // Al limpiar todo también removemos mensajes de error en tiempo real
+  clearBtn.addEventListener('click', () => {
+    document.querySelectorAll('[data-error-for]').forEach(el => el.remove());
   });
 
   saveTemplateBtn.addEventListener("click", () => {
@@ -243,6 +256,122 @@ function setDefaultQuoteDate(form) {
   const quoteDate = form.querySelector('[name="fecha_cotizacion"]');
   if (!quoteDate || quoteDate.value) return;
   quoteDate.value = new Date().toISOString().split("T")[0];
+}
+
+function validateForm(values) {
+  const errors = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const isFullDateLocal = (dateStr) => {
+    if (typeof dateStr !== 'string') return false;
+    const m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return false;
+    const y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    if (y < 1900 || y > 2100) return false;
+    const dt = new Date(dateStr);
+    return dt.getFullYear() === y && dt.getMonth() + 1 === mo && dt.getDate() === d;
+  };
+
+  const isPast = (dateStr) => {
+    if (!isFullDateLocal(dateStr)) return false;
+    const d = new Date(dateStr);
+    d.setHours(0, 0, 0, 0);
+    return d < today;
+  };
+
+  if (isPast(values.fecha_salida)) errors.push("La fecha de salida no puede ser en el pasado.");
+  if (isPast(values.fecha_vuelo_salida)) errors.push("La fecha del vuelo de ida no puede ser en el pasado.");
+  if (isPast(values.fecha_vuelo_regreso)) errors.push("La fecha del vuelo de regreso no puede ser en el pasado.");
+  if (isFullDateLocal(values.fecha_vuelo_salida) && isFullDateLocal(values.fecha_vuelo_regreso)) {
+    const ida = new Date(values.fecha_vuelo_salida);
+    const regreso = new Date(values.fecha_vuelo_regreso);
+    ida.setHours(0, 0, 0, 0);
+    regreso.setHours(0, 0, 0, 0);
+    if (regreso < ida) errors.push("La fecha de regreso no puede ser anterior a la fecha de ida.");
+  }
+  if (isPast(values.fecha_ingreso)) errors.push("La fecha de ingreso al hotel no puede ser en el pasado.");
+  if (isPast(values.fecha_cotizacion)) errors.push("La fecha de cotización no puede ser en el pasado.");
+
+  // Validaciones generales
+  if (values.precio && isNaN(Number(values.precio))) errors.push("El precio debe ser un número válido.");
+
+  return errors;
+}
+
+// Validación en tiempo real: muestra/borra mensajes por campo
+function setupRealtimeValidation(form) {
+  const fields = [
+    "fecha_salida",
+    "fecha_vuelo_salida",
+    "fecha_vuelo_regreso",
+    "fecha_ingreso",
+    "fecha_cotizacion"
+  ];
+
+  const isPastDate = (dateStr) => {
+    if (!dateStr) return false;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const d = new Date(dateStr);
+    d.setHours(0,0,0,0);
+    return d < today;
+  };
+
+  const isFullDate = (dateStr) => {
+    return typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+  };
+
+  const clearFieldError = (name) => {
+    const el = form.querySelector(`[data-error-for="${name}"]`);
+    if (el) el.remove();
+  };
+
+  const showFieldError = (name, message) => {
+    clearFieldError(name);
+    const field = form.querySelector(`[name="${name}"]`);
+    if (!field) return;
+    const container = field.closest('.field') || field.parentElement || field;
+    const span = document.createElement('div');
+    span.className = 'field-error';
+    span.setAttribute('data-error-for', name);
+    span.textContent = message;
+    container.appendChild(span);
+  };
+
+  const validatePair = () => {
+    const ida = form.querySelector('[name="fecha_vuelo_salida"]')?.value;
+    const regreso = form.querySelector('[name="fecha_vuelo_regreso"]')?.value;
+    clearFieldError('fecha_vuelo_regreso');
+    if (isFullDate(ida) && isFullDate(regreso)) {
+      const d1 = new Date(ida); d1.setHours(0,0,0,0);
+      const d2 = new Date(regreso); d2.setHours(0,0,0,0);
+      if (d2 < d1) showFieldError('fecha_vuelo_regreso', 'La fecha de regreso no puede ser anterior a la fecha de ida.');
+    }
+  };
+
+  fields.forEach((name) => {
+    const input = form.querySelector(`[name="${name}"]`);
+    if (!input) return;
+    const handler = () => {
+      clearFieldError(name);
+      // sólo validar si la fecha está completa (YYYY-MM-DD)
+      if (input.value && !isFullDate(input.value)) return;
+      if (isPastDate(input.value)) {
+        showFieldError(name, 'La fecha no puede ser en el pasado.');
+      }
+      if (name === 'fecha_vuelo_salida' || name === 'fecha_vuelo_regreso') {
+        validatePair();
+      }
+    };
+    // mientras escribe: limpiar el error
+    input.addEventListener('input', () => clearFieldError(name));
+    // validar al terminar de editar (blur) y al cambiar (por selector de fecha)
+    input.addEventListener('blur', handler);
+    input.addEventListener('change', handler);
+  });
 }
 
 function setupStarRatings(form) {
